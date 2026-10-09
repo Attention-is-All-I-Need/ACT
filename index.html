@@ -1,415 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Agentic Critical Training</title>
-    <meta name="description"
-        content="Agentic Critical Training (ACT): A reinforcement learning paradigm that trains LLM agents to identify better actions among alternatives, producing genuine self-reflection rather than imitating it.">
-    <meta name="keywords"
-        content="Agentic Critical Training, ACT, LLM agents, reinforcement learning, self-reflection, imitation learning, agent training">
-    <meta name="author" content="Weize Liu, Minghui Liu, Sy-Tuyen Ho, Souradip Chakraborty, Xiyao Wang, Furong Huang">
+    <title>Agentic Critical Training (ACT)</title>
+    <meta name="description" content="ACT trains language-model agents to judge actions with verifiable rewards: an action-judgment warm-up before imitation learning and optional reinforcement learning.">
+    <meta name="author" content="Weize Liu, Minghui Liu, Sy-Tuyen Ho, Yongkyun Lee, Andrew Adams Schoen, Souradip Chakraborty, Xiyao Wang, Furong Huang">
+    <meta name="keywords" content="ACT, Agentic Critical Training, LLM agents, action judgment, RLVR, GRPO, imitation learning">
     <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
-
+    <link rel="canonical" href="https://attention-is-all-i-need.github.io/ACT/">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Agentic Critical Training">
-    <meta property="og:description"
-        content="A reinforcement learning paradigm that trains LLM agents to identify better actions among alternatives, producing genuine self-reflection rather than imitating it.">
-
+    <meta property="og:description" content="ACT trains language-model agents to judge actions with verifiable rewards: an action-judgment warm-up before imitation learning and optional reinforcement learning.">
+    <meta property="og:url" content="https://attention-is-all-i-need.github.io/ACT/">
+    <meta property="og:image" content="https://attention-is-all-i-need.github.io/ACT/static/images/act-overview.png">
+    <meta property="og:image:alt" content="ACT: training action judgment with a verifiable selection reward">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Agentic Critical Training">
-    <meta name="twitter:description"
-        content="A reinforcement learning paradigm that trains LLM agents to identify better actions among alternatives, producing genuine self-reflection rather than imitating it.">
-
+    <meta name="twitter:description" content="ACT trains language-model agents to judge actions with verifiable rewards: an action-judgment warm-up before imitation learning and optional reinforcement learning.">
+    <meta name="twitter:image" content="https://attention-is-all-i-need.github.io/ACT/static/images/act-overview.png">
     <meta name="citation_title" content="Agentic Critical Training">
     <meta name="citation_author" content="Liu, Weize">
     <meta name="citation_author" content="Liu, Minghui">
     <meta name="citation_author" content="Ho, Sy-Tuyen">
+    <meta name="citation_author" content="Lee, Yongkyun">
+    <meta name="citation_author" content="Schoen, Andrew Adams">
     <meta name="citation_author" content="Chakraborty, Souradip">
     <meta name="citation_author" content="Wang, Xiyao">
     <meta name="citation_author" content="Huang, Furong">
-    <meta name="citation_publication_date" content="2025">
+    <meta name="citation_publication_date" content="2026">
     <meta name="citation_arxiv_id" content="2603.08706">
     <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2603.08706">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-
-    <style>
-        :root {
-            --primary: #2563eb;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        .publication-title {
-            line-height: 1.1;
-            color: #111827;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            font-size: clamp(2.2rem, 5vw, 3.0rem);
-        }
-
-        .author-block {
-            margin: 0 .25rem;
-        }
-
-        .hero.is-primary {
-            background: none;
-        }
-
-        .buttons .button.is-dark {
-            background-color: #111827;
-        }
-
-        .scroll-to-top {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: none;
-            background: #111827;
-            color: #fff;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 99;
-        }
-
-        .scroll-to-top.show {
-            display: flex;
-        }
-
-        .footer {
-            border-top: 1px solid #e5e7eb;
-        }
-
-        pre code {
-            white-space: pre;
-        }
-
-        .has-text-centered .table-note,
-        .has-text-centered .caption-left,
-        p.table-note,
-        p.caption-left {
-            margin-top: 0.1rem;
-            color: #6b7280;
-            font-size: 0.9rem;
-            text-align: left !important;
-            font-style: normal !important;
-        }
-
-        .container.is-max-desktop {
-            max-width: 812px;
-        }
-
-        .columns.is-centered .column.is-four-fifths {
-            flex: 0 0 100%;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .publication-authors {
-            color: #111827;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .affiliations-line {
-            color: #1f2937;
-            margin-top: .35rem;
-        }
-
-        .hero .publication-links .button {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-        }
-
-        .hero .container.is-max-desktop {
-            max-width: none;
-        }
-
-        .subsection-title {
-            margin-top: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-
-    </style>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ScholarlyArticle",
-      "headline": "Agentic Critical Training",
-      "description": "A reinforcement learning paradigm that trains LLM agents to identify better actions among alternatives, producing genuine self-reflection rather than imitating it.",
-      "author": [
-        {"@type": "Person", "name": "Weize Liu"},
-        {"@type": "Person", "name": "Minghui Liu"},
-        {"@type": "Person", "name": "Sy-Tuyen Ho"},
-        {"@type": "Person", "name": "Souradip Chakraborty"},
-        {"@type": "Person", "name": "Xiyao Wang"},
-        {"@type": "Person", "name": "Furong Huang"}
-      ],
-      "datePublished": "2025",
-      "identifier": "arXiv:2603.08706",
-      "url": "https://attention-is-all-i-need.github.io/ACT/",
-      "keywords": ["LLM agents", "reinforcement learning", "self-reflection", "agentic training", "ACT"]
-    }
-    </script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/main.js" defer></script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ScholarlyArticle", "headline": "Agentic Critical Training", "description": "ACT trains language-model agents to judge actions with verifiable rewards: an action-judgment warm-up before imitation learning and optional reinforcement learning.", "author": [{"@type": "Person", "name": "Weize Liu", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}]}, {"@type": "Person", "name": "Minghui Liu", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}]}, {"@type": "Person", "name": "Sy-Tuyen Ho", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}]}, {"@type": "Person", "name": "Yongkyun Lee", "affiliation": [{"@type": "Organization", "name": "All Purpose AI"}]}, {"@type": "Person", "name": "Andrew Adams Schoen", "affiliation": [{"@type": "Organization", "name": "All Purpose AI"}]}, {"@type": "Person", "name": "Souradip Chakraborty", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}]}, {"@type": "Person", "name": "Xiyao Wang", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}]}, {"@type": "Person", "name": "Furong Huang", "affiliation": [{"@type": "Organization", "name": "University of Maryland, College Park"}, {"@type": "Organization", "name": "All Purpose AI"}]}], "datePublished": "2026", "identifier": "arXiv:2603.08706", "url": "https://attention-is-all-i-need.github.io/ACT/", "encoding": {"@type": "MediaObject", "contentUrl": "https://arxiv.org/pdf/2603.08706", "encodingFormat": "application/pdf"}}</script>
 </head>
-
 <body>
-    <button class="scroll-to-top" id="scrollTopBtn" title="Scroll to top" aria-label="Scroll to top">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<nav class="site-nav" aria-label="Main navigation"><div class="container nav-inner">
+    <a class="wordmark" href="#">ACT<span style="color:var(--accent)">.</span></a>
+    <div class="nav-links"><a href="#method">Method</a><a href="#results">Results</a><a href="#analysis">Analysis</a><a href="#generalization" class="optional">Generalization</a><a href="#citation">Citation</a></div>
+</div></nav>
+<main id="main-content">
+<header class="hero container">
+    <h1>Agentic Critical Training</h1>
+    <div class="authors"><span>Weize Liu<sup>1</sup>,</span><span>Minghui Liu<sup>1</sup>,</span><span>Sy-Tuyen Ho<sup>1</sup>,</span><span>Yongkyun Lee<sup>∀</sup>,</span><span>Andrew Adams Schoen<sup>∀</sup>,</span><br><span>Souradip Chakraborty<sup>1</sup>,</span><span>Xiyao Wang<sup>1,‡</sup>,</span><span>Furong Huang<sup>1,∀,‡</sup></span></div>
+    <p class="affiliation"><span><sup>1</sup> University of Maryland, College Park</span><span><sup>∀</sup> All Purpose AI</span></p>
+    <p class="advising">‡ Equal advising</p>
+    <div class="buttons">
+        <a class="button" href="https://arxiv.org/pdf/2603.08706" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H5v18h14V8zM14 3v5h5M8 12h8M8 16h8"/></svg>Read the paper</a>
+        <a class="button secondary" href="https://arxiv.org/abs/2603.08706" target="_blank" rel="noopener">arXiv ↗</a>
+    </div>
+</header>
+<section class="section tint" id="abstract"><div class="container abstract">
+    <h2>Abstract</h2>
+    <p>Imitation learning (IL) teaches language-model agents to reproduce expert actions but not to distinguish them from plausible mistakes. Self-reflection methods expose models to alternatives yet use supervised fine-tuning (SFT) to imitate fixed rationales and actions. We introduce <strong>Agentic Critical Training</strong> (ACT), which uses reinforcement learning with verifiable rewards (RLVR) to train models to judge actions directly. At each expert-trajectory state, ACT pairs an expert action with an alternative sampled from the initial policy and randomizes their order. The model generates its own reasoning but is rewarded only for selecting the expert action. ACT reuses demonstrations, requires no reference rationales, and allows pair reuse across model sizes. ACT is a warm-up before IL, optionally followed by RL; inference requires no candidate comparison. Across Qwen3-8B and Olmo-3-7B-Instruct on ALFWorld-ID, WebShop, and ScienceWorld, ACT yields average gains of 5.85 points over IL and 4.12 points over IL→RL without ACT, while also improving ALFWorld-OOD. With Olmo on ScienceWorld, the full pipeline gains 15.36 points over CoT prompting and 9.23 points over IL→RL without ACT. Both ACT→IL and the full pipeline outperform supervised reflection baselines. Controls with fixed pairs or matched training durations show that the gains stem from the ACT objective rather than additional data or training. Without reasoning-specific post-training, the standalone ACT checkpoint achieves the highest mean among evaluated models on MATH-500 and GPQA-Diamond, showing that action comparison complements generation.</p>
+</div></section>
+<section class="section" id="overview"><div class="container">
+    <h2>Motivation</h2>
+    <p>Language-model agents make a sequence of choices while navigating websites, manipulating household environments, conducting scientific experiments, and calling tools. A single plausible but incorrect action can derail the rest of a trajectory. Most agent post-training methods teach the model to generate the demonstrated next action, but do not explicitly teach it to compare that action with plausible alternatives. <strong>We study whether adding such a comparison objective can improve agent training.</strong></p>
+    <p>This limitation is clearest in imitation learning (IL). IL maximizes the likelihood of expert actions, so each training example identifies what the agent should do at a given state. It does not show which competing actions should be rejected or what makes them worse. Early Experience adds information about alternatives by rolling out both the expert and alternative actions, observing their resulting next states, and synthesizing a rationale that explains why the expert action is better. Although its targets contain more information than standard behavioral cloning, <strong>training still uses next-token prediction to reproduce a fixed rationale and the expert action</strong>. The model is given both the explanation and the answer, rather than trained to arrive at the judgment itself, as illustrated in Figure 1(a).</p>
+    <p>We propose <strong>Agentic Critical Training (ACT)</strong>, shown in Figure 1(b), to train this judgment directly. The model reasons about an expert action and a model-generated alternative, then selects the better one. Reinforcement learning provides a reward based on whether it selects the expert action, without evaluating the chain-of-thought or requiring a match to a reference rationale. The supervision therefore evaluates the decision, while allowing the model to develop its own reasoning for that decision.</p>
+    <figure><a href="static/images/act-overview.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Comparison of supervised reflection and ACT, followed by training paths and gains across model families"><img src="static/images/act-overview.png" alt="Comparison of supervised reflection and ACT, followed by training paths and gains across model families" width="1512" height="672" loading="lazy" decoding="async"></a><figcaption><strong>Figure 1.</strong> (a) Early Experience uses SFT to imitate a synthesized reflection and expert action. (b) ACT trains action judgment through RLVR, verifying the selected action without a reference rationale. ACT precedes IL; optional RL continues from the IL checkpoint. General-reasoning gains are measured at the standalone ACT stage.</figcaption></figure>
+</div></section>
+<section class="section tint" id="method"><div class="container">
+    <h2>The ACT Pipeline</h2>
+    <p>ACT transforms the learning objective from “imitate the expert action” to “identify the better action.” It bridges the pretrained model and downstream policy training by first building the capacity to evaluate actions. The pipeline reuses expert demonstrations to construct action pairs, trains action judgment with Group Relative Policy Optimization (GRPO), and then applies IL with optional RL.</p>
+    <figure><a href="static/images/act-pipeline.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Data construction, ACT action judgment with GRPO, and downstream IL with optional RL"><img src="static/images/act-pipeline.png" alt="Data construction, ACT action judgment with GRPO, and downstream IL with optional RL" width="1512" height="633" loading="lazy" decoding="async"></a><figcaption><strong>Figure 2.</strong> Expert–alternative pairs → ACT checkpoint → IL → optional RL. At test time, the policy generates actions directly, without candidate pairs or comparison.</figcaption></figure>
+    <div class="pipeline-steps">
+        <article>
+            <h3><span class="step-number" aria-hidden="true">1</span> Construct expert–alternative pairs</h3>
+            <p>For each expert state-action pair, we sample an alternative from the initial policy, discard exact matches, and pair the remaining alternative with the expert action. The state includes the task description, recent observation-action history, and current observation. Sampling from the initial policy produces alternatives that reflect its own likely errors. We label the expert action as preferred under the assumption that expert actions are generally better, obtaining labels without reference-rationale generation. Experiments use one sampled alternative per state.</p>
+        </article>
+        <article>
+            <h3><span class="step-number" aria-hidden="true">2</span> Train action judgment with ACT</h3>
+            <p>We randomize candidate order to prevent reliance on a fixed position. Given the task context and candidate pair, the model reasons about which action is better and outputs its choice. GRPO samples multiple responses and trains with a verifiable action-selection reward: its accuracy component checks whether the chosen action matches the expert action. The reward does not evaluate the reasoning content or require a reference rationale, so reasoning is optimized indirectly through correct selection.</p>
+        </article>
+        <article>
+            <h3><span class="step-number" aria-hidden="true">3</span> Continue with IL and optional RL</h3>
+            <p>ACT serves as a warm-up before IL, which trains direct action generation by maximizing the likelihood of expert actions. Optional RL continues from the resulting IL checkpoint. We use <strong>ACT stage</strong> for the action-judgment warm-up, <strong>full ACT pipeline</strong> for ACT → IL → RL, and <strong>IL → RL w/o ACT</strong> for the corresponding baseline.</p>
+            <p><strong>ACT is a training stage, not an inference-time reranking procedure.</strong> At test time, the policy generates the next action directly, without first generating and comparing multiple candidates.</p>
+        </article>
+    </div>
+</div></section>
+<section class="section" id="results"><div class="container">
+    <h2>Main Results</h2>
+    <p>We evaluate Qwen3-8B and Olmo-3-7B-Instruct on ALFWorld, WebShop, and ScienceWorld, using the same expert trajectories across training-based methods. Adding ACT improves both IL and IL → RL, including on ALFWorld-OOD. The full ACT pipeline achieves the highest mean in all four evaluation settings for both backbones; ACT → IL also outperforms Early Experience, SAND, and Agent-R in every setting. Comparisons using the same expert and alternative actions suggest that rewarding a correct judgment is more effective than imitating a fixed rationale.</p>
+    <div data-model="qwen"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 · Qwen3-8B; scroll horizontally on small screens">
+<table>
+<caption>Table 1 · Qwen3-8B</caption>
 
-    <main id="main-content">
-        <!-- Hero -->
-        <section class="hero">
-            <div class="hero-body">
-                <div class="container is-max-desktop">
-                    <div class="columns is-centered">
-                        <div class="column has-text-centered">
-                            <h1 class="title publication-title">Agentic Critical Training</h1>
-                            <div class="publication-authors">
-                                <div>
-                                    <span class="author-block">Weize Liu,</span>
-                                    <span class="author-block">Minghui Liu,</span>
-                                    <span class="author-block">Sy-Tuyen Ho,</span>
-                                    <span class="author-block">Souradip Chakraborty,</span>
-                                    <span class="author-block">Xiyao Wang<sup>&Dagger;</sup>,</span>
-                                    <span class="author-block">Furong Huang<sup>&Dagger;</sup></span>
-                                </div>
-                            </div>
-                            <div class="affiliations-line">University of Maryland, College Park</div>
-                            <div class="affiliations-line"><sup>&Dagger;</sup> Equal advising</div>
-                            <div class="publication-links" style="margin-top:1rem;">
-                                <div class="buttons is-centered">
-                                    <a href="https://arxiv.org/abs/2603.08706" target="_blank" class="button is-dark is-rounded">
-                                        <span class="icon"><i class="ai ai-arxiv"></i></span>
-                                        <span>arXiv</span>
-                                    </a>
-                                    <a href="https://arxiv.org/pdf/2603.08706" target="_blank" class="button is-dark is-rounded">
-                                        <span class="icon"><i class="fas fa-file-pdf"></i></span>
-                                        <span>Paper</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<thead>
+<tr><th scope="col">Method</th><th scope="col">ALFWorld ID</th><th scope="col">ALFWorld OOD</th><th scope="col">WebShop</th><th scope="col">ScienceWorld</th></tr>
+</thead>
 
-        <!-- Abstract -->
-        <section class="section" style="background:#f3f4f6; padding: 2.5rem 0;">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3" style="margin-bottom:1rem;">Abstract</h2>
-                        <div class="content has-text-justified">
-                            <p>
-                                Training large language models (LLMs) as autonomous agents often begins with imitation learning, but it only teaches agents <em>what</em> to do without understanding <em>why</em>: agents never contrast successful actions against suboptimal alternatives and thus lack awareness of action quality. Recent approaches attempt to address this by introducing self-reflection supervision derived from contrasts between expert and alternative actions. However, the training paradigm fundamentally remains imitation learning: the model imitates pre-constructed reflection text rather than learning to reason autonomously. We propose <b>Agentic Critical Training (ACT)</b>, a reinforcement learning paradigm that trains agents to identify the better action among alternatives. By rewarding whether the model's judgment is correct, ACT drives the model to autonomously develop reasoning about action quality, producing genuine self-reflection rather than imitating it. Across three challenging agent benchmarks, ACT consistently improves agent performance when combined with different post-training methods. It achieves an average improvement of <b>5.07</b> points over imitation learning and <b>4.62</b> points over reinforcement learning. Compared to approaches that inject reflection capability through knowledge distillation, ACT also demonstrates clear advantages, yielding an average improvement of <b>2.42</b> points. Moreover, ACT enables strong out-of-distribution generalization on agentic benchmarks and improves performance on general reasoning benchmarks without any reasoning-specific training data, highlighting the value of our method. These results suggest that ACT is a promising path toward developing more reflective and capable LLM agents.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tbody>
+<tr class=""><th scope="row">Prompt w/o CoT thinking</th><td class="">32.62<span class="uncertainty">±2.63</span></td><td class="">24.88<span class="uncertainty">±2.88</span></td><td class="">18.20<span class="uncertainty">±0.85</span></td><td class="">16.99<span class="uncertainty">±2.85</span></td></tr>
 
-        <!-- Motivation -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Motivation</h2>
-                        <img src="static/images/fig1.png" alt="Conceptual comparison: Imitated vs Genuine Self-Reflection" style="width:100%;" />
-                        <p class="has-text-grey is-italic has-text-centered" style="margin-top:0.5rem;">
-                            <b>(a)</b> Early Experience imitates pre-constructed reflection text via SFT. <b>(b)</b> ACT uses RL to train agents that autonomously develop genuine self-reflection through verifiable rewards.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">Prompt w/ CoT thinking</th><td class="">50.00<span class="uncertainty">±4.77</span></td><td class="">39.30<span class="uncertainty">±7.72</span></td><td class="">15.53<span class="uncertainty">±0.34</span></td><td class="">18.68<span class="uncertainty">±0.34</span></td></tr>
 
-        <!-- Method -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">The ACT Pipeline</h2>
-                        <img src="static/images/fig2.png" alt="Overview of the ACT + RL training pipeline" style="width:100%;" />
-                        <p class="has-text-grey is-italic has-text-centered" style="margin-top:0.5rem; margin-bottom:1.25rem;">
-                            Overview of the ACT + RL training pipeline.<br><b>Stage 1:</b> Data Construction. <b>Stage 2:</b> Agentic Critical Training. <b>Stage 3:</b> RL Action Training.
-                        </p>
-                        <div class="content has-text-justified">
-                            <p>
-                                ACT transforms the learning objective from "imitate the expert action" to "identify the better action," requiring the model to develop discriminative understanding of action quality. The training pipeline consists of three stages:
-                            </p>
-                            <p>
-                                <b>Stage 1 (Data Construction):</b> Given expert demonstration trajectories, we extract state-action pairs and sample alternative actions from the initial policy at each state. Expert actions are paired with model-generated alternatives to construct contrastive training examples.
-                            </p>
-                            <p>
-                                <b>Stage 2 (Agentic Critical Training):</b> The model is trained via GRPO to identify the better action among two candidates presented in randomized order. Crucially, because ACT is trained through RL rather than imitation learning, the model must <em>autonomously discover</em> chain-of-thought reasoning that causally leads to correct action selection. The model is rewarded only for selecting correctly, and must therefore learn to reason about action quality on its own.
-                            </p>
-                            <p>
-                                <b>Stage 3 (RL Action Training):</b> The ACT-enhanced model is further trained with GRPO for direct action generation on the expert trajectories, leveraging its improved critical reasoning foundation to achieve higher task success rates.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">ACT stage</th><td class="">62.14<span class="uncertainty">±7.72</span></td><td class="">59.45<span class="uncertainty">±9.23</span></td><td class="">21.53<span class="uncertainty">±4.58</span></td><td class="">30.04<span class="uncertainty">±2.13</span></td></tr>
 
-        <!-- Main Results -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Main Results</h2>
-                        <div class="content has-text-justified">
-                            <p>We evaluate ACT on three diverse benchmarks: <b>ALFWorld</b> (embodied household tasks), <b>WebShop</b> (web-based shopping), and <b>ScienceWorld</b> (scientific reasoning). All methods are trained on exactly the same expert trajectories.</p>
-                        </div>
-                        <img src="static/images/Table1.png" alt="Main results on Qwen3-8B" style="width:100%;" />
-                        <p class="table-note">Main results on Qwen3-8B (%). ALFWorld and WebShop report success rates; ScienceWorld reports next-action prediction accuracy.</p>
-                        <div class="content has-text-justified" style="margin-top: 1rem;">
-                            <p><b>Key findings:</b></p>
-                            <ul>
-                                <li><b>ACT provides positive transfer:</b> Adding ACT yields an average improvement of <b>5.07pp</b> over IL and <b>4.62pp</b> over RL. RL w/ ACT achieves the best overall performance.</li>
-                                <li><b>ACT outperforms Early Experience:</b> IL w/ ACT outperforms Early Experience by <b>2.42pp</b> on average, suggesting that RL-driven genuine self-reflection is more effective than imitating pre-generated reflection text.</li>
-                                <li><b>ACT improves OOD generalization:</b> ACT's gain on OOD tasks (<b>3.73pp</b>) is larger than on ID tasks (<b>2.15pp</b>), indicating the reasoning generalizes to unseen configurations.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">Imitation Learning (IL)</th><td class="">85.71<span class="uncertainty">±0.58</span></td><td class="">79.85<span class="uncertainty">±2.79</span></td><td class="">28.00<span class="uncertainty">±1.31</span></td><td class="">21.94<span class="uncertainty">±2.65</span></td></tr>
 
-        <!-- Cross-Size Transferability -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Cross-Size Data Transferability</h2>
-                        <div class="content has-text-justified">
-                            <p>We investigate whether ACT data collected from one model size can transfer to another. We train Qwen3-4B on ALFWorld using ACT data collected entirely from Qwen3-8B, without any re-collection or adaptation.</p>
-                        </div>
-                        <img src="static/images/Table2.png" alt="Cross-size results on ALFWorld" style="width:100%;" />
-                        <p class="table-note">Cross-size results on ALFWorld with in-distribution (ID) and out-of-distribution (OOD) success rates (%).</p>
-                        <div class="content has-text-justified" style="margin-top: 1rem;">
-                            <p>The transferred ACT data remains effective: all ACT-augmented methods improve over their non-ACT counterparts on both ID and OOD tasks for Qwen3-4B. This validates that ACT's benefits generalize across model sizes and that the data collection cost can be amortized by reusing data across models.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">Early Experience</th><td class="">86.43<span class="uncertainty">±1.55</span></td><td class="">79.10<span class="uncertainty">±10.57</span></td><td class="">30.93<span class="uncertainty">±1.23</span></td><td class="">22.82<span class="uncertainty">±1.30</span></td></tr>
 
-        <!-- General Reasoning -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Generalization to General Reasoning</h2>
-                        <div class="content has-text-justified">
-                            <p>We evaluate whether the critical reasoning acquired through ACT transfers to general reasoning benchmarks. Models trained on ALFWorld agentic data are directly evaluated on <b>MATH-500</b> and <b>GPQA-Diamond</b>&mdash;without any mathematical or scientific reasoning training data.</p>
-                        </div>
-                        <img src="static/images/Table3.png" alt="General reasoning benchmark results" style="width:100%;" />
-                        <p class="table-note">Accuracy (%) with standard deviation across 3 runs. All trained models are learned solely from ALFWorld agentic data.</p>
-                        <div class="content has-text-justified" style="margin-top: 1rem;">
-                            <p><b>IL causes "reasoning collapse":</b> On GPQA-Diamond, IL degrades performance by <b>6.91pp</b> compared to the CoT prompting baseline (44.61% vs. 51.52%). In contrast, <b>ACT achieves the highest scores on both benchmarks</b> despite being trained exclusively on agentic data, improving GPQA-Diamond by <b>1.85pp</b> over the baseline. This suggests that agentic RL environments, when combined with the ACT objective, can serve as a viable pathway for enhancing general reasoning capabilities.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">SAND</th><td class="">85.71<span class="uncertainty">±1.16</span></td><td class="">83.09<span class="uncertainty">±0.93</span></td><td class="">20.27<span class="uncertainty">±1.36</span></td><td class="">29.41<span class="uncertainty">±0.46</span></td></tr>
 
-        <!-- Case Studies -->
-        <section class="section" style="background:#f3f4f6;">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered has-text-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Case Studies</h2>
+<tr class=""><th scope="row">Agent-R</th><td class="">87.86<span class="uncertainty">±1.17</span></td><td class="">81.09<span class="uncertainty">±0.93</span></td><td class="">24.07<span class="uncertainty">±4.20</span></td><td class="">16.95<span class="uncertainty">±1.79</span></td></tr>
 
-                        <!-- Case Study 1: ALFWorld -->
-                        <h3 class="title is-5 subsection-title">Failure Recovery on ALFWorld</h3>
-                        <div class="content has-text-justified" style="margin-bottom: 1rem;">
-                            <p>The IL model enters an infinite loop, repeating a failed action for over 30 steps. The ACT model encounters the same type of failure but uses its internal reasoning to diagnose the root cause and issue the correct command.</p>
-                        </div>
-                        <img src="static/images/case1.png" alt="ALFWorld case study: IL failure loop vs ACT self-critique and recovery" style="width:100%;" />
-                        <p class="caption-left"><b>Left:</b> The IL model repeats a failed action indefinitely. <b>Right:</b> The ACT model diagnoses the root cause and recovers.</p>
+<tr class="highlight"><th scope="row">ACT → IL</th><td class="">89.76<span class="uncertainty">±1.88</span></td><td class="">83.58<span class="uncertainty">±3.80</span></td><td class="">32.00<span class="uncertainty">±1.18</span></td><td class="">32.85<span class="uncertainty">±0.15</span></td></tr>
 
-                        <!-- Case Study 2: GPQA Self-Verification -->
-                        <h3 class="title is-5 subsection-title" style="margin-top: 2rem;">Self-Verification on GPQA-Diamond</h3>
-                        <div class="content has-text-justified" style="margin-bottom: 1rem;">
-                            <p>ACT exhibits <em>self-verification</em> behavior: after performing an initial derivation, the model checks its answer by substituting back into the original equations, systematically eliminating incorrect options.</p>
-                        </div>
-                        <img src="static/images/case2.png" alt="GPQA-Diamond case study: ACT self-verification on pion decay problem" style="width:100%;" />
-                        <p class="caption-left">ACT verifies each answer option against energy conservation, systematically eliminating inconsistent choices.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+<tr class=""><th scope="row">IL → RL w/o ACT</th><td class="">94.28<span class="uncertainty">±1.54</span></td><td class="">90.80<span class="uncertainty">±0.70</span></td><td class="">39.53<span class="uncertainty">±1.06</span></td><td class="">30.52<span class="uncertainty">±0.46</span></td></tr>
 
-        <!-- Reference -->
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="columns is-centered">
-                    <div class="column is-four-fifths">
-                        <h2 class="title is-3">Reference</h2>
-                        <p>If you find our paper useful, please cite us:</p>
-                        <div style="position: relative; margin-top: 1rem;">
-                            <button onclick="copyBibtex(this)" style="position:absolute; top:10px; right:10px; background:#fff; border:1px solid #d1d5db; border-radius:6px; padding:4px 12px; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:4px; color:#374151;">
-                                <i class="far fa-copy"></i> Copy
-                            </button>
-                            <pre style="background:#f3f4f6; border-radius:8px; padding:1.25rem 1.5rem; overflow-x:auto;"><code id="bibtex">@article{liu2026agentic,
+<tr class="highlight"><th scope="row">Full ACT pipeline</th><td class="best">96.19<span class="uncertainty">±0.67</span></td><td class="best">91.54<span class="uncertainty">±0.35</span></td><td class="best">42.80<span class="uncertainty">±0.59</span></td><td class="best">34.63<span class="uncertainty">±0.33</span></td></tr>
+</tbody>
+</table>
+</div></div>
+    <div data-model="olmo"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 · Olmo-3-7B-Instruct; scroll horizontally on small screens">
+<table>
+<caption>Table 2 · Olmo-3-7B-Instruct</caption>
+
+<thead>
+<tr><th scope="col">Method</th><th scope="col">ALFWorld ID</th><th scope="col">ALFWorld OOD</th><th scope="col">WebShop</th><th scope="col">ScienceWorld</th></tr>
+</thead>
+
+<tbody>
+<tr class=""><th scope="row">Prompt w/o CoT thinking</th><td class="">0.71<span class="uncertainty">±0.58</span></td><td class="">0.25<span class="uncertainty">±0.35</span></td><td class="">11.47<span class="uncertainty">±0.34</span></td><td class="">3.47<span class="uncertainty">±2.04</span></td></tr>
+
+<tr class=""><th scope="row">Prompt w/ CoT thinking</th><td class="">11.91<span class="uncertainty">±0.67</span></td><td class="">10.94<span class="uncertainty">±2.14</span></td><td class="">12.47<span class="uncertainty">±0.47</span></td><td class="">6.31<span class="uncertainty">±3.97</span></td></tr>
+
+<tr class=""><th scope="row">ACT stage</th><td class="">16.90<span class="uncertainty">±1.69</span></td><td class="">11.94<span class="uncertainty">±3.71</span></td><td class="">11.53<span class="uncertainty">±1.31</span></td><td class="">12.03<span class="uncertainty">±0.92</span></td></tr>
+
+<tr class=""><th scope="row">Imitation Learning (IL)</th><td class="">62.62<span class="uncertainty">±3.37</span></td><td class="">56.97<span class="uncertainty">±9.33</span></td><td class="">12.87<span class="uncertainty">±9.02</span></td><td class="">8.10<span class="uncertainty">±0.19</span></td></tr>
+
+<tr class=""><th scope="row">Early Experience</th><td class="">42.62<span class="uncertainty">±3.51</span></td><td class="">35.32<span class="uncertainty">±6.40</span></td><td class="">13.27<span class="uncertainty">±7.04</span></td><td class="">8.97<span class="uncertainty">±0.71</span></td></tr>
+
+<tr class=""><th scope="row">SAND</th><td class="">36.91<span class="uncertainty">±1.78</span></td><td class="">28.11<span class="uncertainty">±3.52</span></td><td class="">7.00<span class="uncertainty">±0.33</span></td><td class="">8.11<span class="uncertainty">±0.31</span></td></tr>
+
+<tr class=""><th scope="row">Agent-R</th><td class="">66.43<span class="uncertainty">±4.67</span></td><td class="">63.93<span class="uncertainty">±4.93</span></td><td class="">13.40<span class="uncertainty">±0.86</span></td><td class="">9.25<span class="uncertainty">±0.70</span></td></tr>
+
+<tr class="highlight"><th scope="row">ACT → IL</th><td class="">74.52<span class="uncertainty">±2.21</span></td><td class="">67.41<span class="uncertainty">±4.06</span></td><td class="">14.80<span class="uncertainty">±7.27</span></td><td class="">10.40<span class="uncertainty">±0.89</span></td></tr>
+
+<tr class=""><th scope="row">IL → RL w/o ACT</th><td class="">81.67<span class="uncertainty">±2.21</span></td><td class="">77.11<span class="uncertainty">±5.91</span></td><td class="">23.40<span class="uncertainty">±1.23</span></td><td class="">12.44<span class="uncertainty">±1.54</span></td></tr>
+
+<tr class="highlight"><th scope="row">Full ACT pipeline</th><td class="best">87.14<span class="uncertainty">±3.08</span></td><td class="best">83.83<span class="uncertainty">±0.35</span></td><td class="best">24.13<span class="uncertainty">±0.41</span></td><td class="best">21.67<span class="uncertainty">±0.61</span></td></tr>
+</tbody>
+</table>
+</div></div>
+    <p class="note"><strong>Metrics:</strong> ALFWorld and WebShop report success rate (%); ScienceWorld reports mean episode score (0–100). Values are mean ± standard deviation over three runs; bold denotes the highest mean.</p>
+    <div class="findings"><article><h3>Stronger downstream training</h3><p>ACT adds <strong>6.32 / 3.10 points</strong> to IL / IL → RL on Qwen3, and <strong>5.38 / 5.14 points</strong> on Olmo, averaged over the three ID benchmarks. On Olmo ScienceWorld, the full pipeline gains <strong>9.23 points</strong> over IL → RL and <strong>15.36</strong> over CoT prompting.</p></article>
+    <article><h3>Generalization across tasks and model sizes</h3><p>On ALFWorld-OOD, ACT improves IL from <strong>79.85 → 83.58</strong> on Qwen3 and <strong>56.97 → 67.41</strong> on Olmo. Adding ACT to IL → RL also improves OOD performance on both backbones. Pairs collected from Qwen3-8B also effectively train Qwen3-4B without re-collection or adaptation, allowing collection costs to be shared across model sizes.</p></article></div>
+</div></section>
+<section class="section tint" id="analysis"><div class="container">
+    <h2>Analysis</h2>
+    <h3>Training objective and continuation controls</h3>
+    <p>We compare ACT with alternative objectives on the same action pairs, and with additional IL or RL training at matched total epochs. The controls show that ACT’s gains are not explained by different data or additional training alone.</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Table 3a · Matched IL continuation; scroll horizontally on small screens">
+<table>
+<caption>Table 3a · Matched IL continuation</caption>
+
+<thead>
+<tr><th scope="col">Method</th><th scope="col">ALFWorld ID</th><th scope="col">ALFWorld OOD</th><th scope="col">WebShop</th><th scope="col">ScienceWorld</th></tr>
+</thead>
+
+<tbody>
+<tr class=""><th scope="row">Imitation Learning (IL)</th><td class="">85.71<span class="uncertainty">±0.58</span></td><td class="">79.85<span class="uncertainty">±2.79</span></td><td class="">28.00<span class="uncertainty">±1.31</span></td><td class="">21.94<span class="uncertainty">±2.65</span></td></tr>
+
+<tr class=""><th scope="row">IL → IL</th><td class="">84.76<span class="uncertainty">±0.89</span></td><td class="">79.11<span class="uncertainty">±3.71</span></td><td class="">31.40<span class="uncertainty">±2.57</span></td><td class="">22.01<span class="uncertainty">±2.01</span></td></tr>
+
+<tr class="highlight"><th scope="row">ACT → IL</th><td class="best">89.76<span class="uncertainty">±1.88</span></td><td class="best">83.58<span class="uncertainty">±3.80</span></td><td class="best">32.00<span class="uncertainty">±1.18</span></td><td class="best">32.85<span class="uncertainty">±0.15</span></td></tr>
+</tbody>
+</table>
+</div>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Table 3b · ACT-stage objective and matched RL controls; scroll horizontally on small screens">
+<table>
+<caption>Table 3b · ACT-stage objective and matched RL controls</caption>
+
+<thead>
+<tr><th scope="col">Method</th><th scope="col">ALFWorld ID</th><th scope="col">ALFWorld OOD</th><th scope="col">WebShop</th><th scope="col">ScienceWorld</th></tr>
+</thead>
+
+<tbody>
+<tr class=""><th scope="row">IL → RL w/o ACT</th><td class="">94.28<span class="uncertainty">±1.54</span></td><td class="">90.80<span class="uncertainty">±0.70</span></td><td class="">39.53<span class="uncertainty">±1.06</span></td><td class="">30.52<span class="uncertainty">±0.46</span></td></tr>
+
+<tr class=""><th scope="row">IL → RL → RL</th><td class="">90.00<span class="uncertainty">±2.10</span></td><td class="">89.80<span class="uncertainty">±3.47</span></td><td class="">33.40<span class="uncertainty">±3.82</span></td><td class="">20.14<span class="uncertainty">±1.09</span></td></tr>
+
+<tr class=""><th scope="row">Full pipeline (SFT-on-choice)</th><td class="">94.76<span class="uncertainty">±1.34</span></td><td class="best">92.78<span class="uncertainty">±1.41</span></td><td class="">37.73<span class="uncertainty">±1.48</span></td><td class="">30.10<span class="uncertainty">±0.19</span></td></tr>
+
+<tr class=""><th scope="row">Full pipeline (DPO)</th><td class="">93.57<span class="uncertainty">±0.58</span></td><td class="">90.05<span class="uncertainty">±1.53</span></td><td class="">41.40<span class="uncertainty">±0.99</span></td><td class="">33.56<span class="uncertainty">±0.27</span></td></tr>
+
+<tr class=""><th scope="row">Full pipeline (no-reasoning)</th><td class="">94.52<span class="uncertainty">±0.67</span></td><td class="">92.54<span class="uncertainty">±0.61</span></td><td class="">38.47<span class="uncertainty">±2.51</span></td><td class="">28.12<span class="uncertainty">±2.33</span></td></tr>
+
+<tr class="highlight"><th scope="row">Full ACT pipeline</th><td class="best">96.19<span class="uncertainty">±0.67</span></td><td class="">91.54<span class="uncertainty">±0.35</span></td><td class="best">42.80<span class="uncertainty">±0.59</span></td><td class="best">34.63<span class="uncertainty">±0.33</span></td></tr>
+</tbody>
+</table>
+</div>
+    <p class="note">Mean ± standard deviation across three runs. Continuation comparisons match six total epochs for IL → IL and ACT → IL, and nine for IL → RL → RL and the full ACT pipeline.</p>
+    <div class="callout"><p><strong>ACT leads on ALFWorld-ID, WebShop, and ScienceWorld in the objective controls.</strong> SFT-on-choice leads on ALFWorld-OOD (92.78). Extending IL or RL alone does not reproduce the gains from action judgment.</p></div>
+    <h3>Causal rationale intervention</h3>
+    <p>Interventions on <strong>400 held-out ALFWorld action pairs</strong> compare the original Qwen3-8B model with the standalone ACT checkpoint. Removing ACT’s rationale lowers choice accuracy from 86.50% to 80.75%; injecting an incorrect rationale lowers it to 50.75%, versus 2.25% for the original model. <strong>These results indicate that ACT’s reasoning is behaviorally relevant to its action selection, and that the trained checkpoint is more resistant to misleading rationales.</strong></p>
+    <figure><a href="static/images/act-intervention.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Choice accuracy under free generation, no rationale, and incorrect rationale, plus the rate of following an injected action"><img src="static/images/act-intervention.png" alt="Choice accuracy under free generation, no rationale, and incorrect rationale, plus the rate of following an injected action" width="1512" height="432" loading="lazy" decoding="async"></a><figcaption><strong>Figure 3.</strong> ACT’s reasoning is behaviorally relevant to action selection. Under an incorrect rationale, the rate of following the injected action drops from 81.75% for the original model to 28.25% for ACT.</figcaption></figure>
+</div></section>
+<section class="section" id="generalization"><div class="container">
+    <h2>Generalization to General Reasoning</h2>
+    <p>After training only on ALFWorld agent data, the <strong>standalone ACT-stage checkpoint</strong> attains the highest mean among evaluated models on MATH-500 and GPQA-Diamond. These checkpoints receive no mathematical or scientific reasoning data during post-training.</p>
+    <figure><a href="static/images/act-reasoning.png" target="_blank" rel="noopener" aria-label="Open full-size figure: MATH-500 and GPQA-Diamond accuracy for prompting, IL, reflection baselines, IL plus RL, and standalone ACT"><img src="static/images/act-reasoning.png" alt="MATH-500 and GPQA-Diamond accuracy for prompting, IL, reflection baselines, IL plus RL, and standalone ACT" width="1512" height="564" loading="lazy" decoding="async"></a><figcaption><strong>Figure 4.</strong> Standalone ACT reaches 87.73% on MATH-500 and 53.37% on GPQA-Diamond: +0.80 and +1.85 points over CoT prompting. Points and error bars show mean ± standard deviation over three runs. These results refer to ACT before downstream IL or RL.</figcaption></figure>
+</div></section>
+<section class="section tint" id="citation"><div class="container">
+    <h2>Reference</h2>
+    <p>If you find our work useful, please cite our paper:</p>
+    <div class="citation-box"><button class="copy-button" id="copy-bibtex" type="button">Copy BibTeX</button><pre><code id="bibtex">@article{liu2026agentic,
   title={Agentic Critical Training},
-  author={Liu, Weize and Liu, Minghui and Ho, Sy-Tuyen and Chakraborty, Souradip and Wang, Xiyao and Huang, Furong},
+  author={Liu, Weize and Liu, Minghui and Ho, Sy-Tuyen and Lee, Yongkyun and
+          Schoen, Andrew Adams and Chakraborty, Souradip and Wang, Xiyao and Huang, Furong},
   journal={arXiv preprint arXiv:2603.08706},
   year={2026}
-}</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer" style="padding-top: 1rem; padding-bottom: 1rem;">
-        <div class="container" style="max-width: 720px;">
-            <div class="content has-text-centered" style="font-size: 0.9rem; color: #6b7280;">
-                <p>This page was built using the <a
-                        href="https://eliahuhorwitz.github.io/Academic-project-page-template/" target="_blank">Academic
-                        Project Page Template</a> adopted from the <a href="https://nerfies.github.io"
-                        target="_blank">Nerfies</a> project page.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        const btn = document.getElementById('scrollTopBtn');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 400) { btn.classList.add('show'); } else { btn.classList.remove('show'); }
-        });
-        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-        function copyBibtex(btn) {
-            const text = document.getElementById('bibtex').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                btn.innerHTML = '<i class="fas fa-check"></i> Copied';
-                setTimeout(() => { btn.innerHTML = '<i class="far fa-copy"></i> Copy'; }, 2000);
-            });
-        }
-    </script>
+}</code></pre><span class="copy-status" id="copy-status" role="status" aria-live="polite"></span></div>
+</div></section>
+</main>
+<footer><div class="container"><p>Original page based on the <a href="https://eliahuhorwitz.github.io/Academic-project-page-template/" target="_blank" rel="noopener">Academic Project Page Template</a> and <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>.</p></div></footer>
+<button id="scroll-top" class="scroll-top" type="button" aria-label="Scroll to top" hidden>↑</button>
 </body>
-
 </html>
